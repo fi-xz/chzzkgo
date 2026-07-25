@@ -47,7 +47,7 @@ Client 인증 API: `GetChannels`, `SearchCategory`, `GetLiveList`, `CreateSessio
 
 | 카테고리 | 상태 | 메서드 |
 |---|---|---|
-| 인증 | ✅ | `GetAuthorizationURL`, `ExchangeCode`, `RequestToken`, `RevokeToken`, `LoginServer` |
+| 인증 | ✅ | `GetAuthorizationURL`, `ExchangeCode`, `RequestToken`, `RevokeToken`, `LoginServer` (`Start` / `LoginHandler` / `CallbackHandler`) |
 | 유저 | ✅ | `GetUser` |
 | 채널 | ✅ | `GetChannels`, `GetChannelManagers`, `GetChannelFollowers`, `GetChannelSubscribers` |
 | 카테고리 | ✅ | `SearchCategory` |
@@ -86,6 +86,23 @@ server := chzzk.NewLoginServer(
 )
 _, err := server.Start(ctx) // ctx 취소 전까지 유지
 ```
+
+### 기존 서버에 통합
+
+이미 운영 중인 HTTP 서버가 있다면 `Start` 대신 핸들러를 직접 등록할 수 있습니다.
+`Start`는 아래 두 핸들러를 자체 서버에 얹어 주는 Wrapper입니다.
+
+```go
+server := chzzk.NewLoginServer(
+    chzzkgo.WithOnLogin(func(t chzzkgo.Tokens) { /* 토큰 저장 */ }),
+)
+
+http.Handle("/auth/chzzk", server.LoginHandler())       // state 발급 + 인가 페이지로 리다이렉트
+http.Handle("/callback", server.CallbackHandler())      // state 검증 + 토큰 교환
+```
+
+핸들러를 직접 사용할 때 서버의 수명과 포트는 호출자가 관리합니다.
+`WithKeepAlive`의 서버 유지 동작은 `Start` 전용이며, 핸들러 사용 시에는 영향이 없습니다.
 
 ## 토큰 저장과 복원
 

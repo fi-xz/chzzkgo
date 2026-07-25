@@ -11,11 +11,17 @@ import (
 	"time"
 )
 
-// LoginServer는 치지직 OAuth 로그인 흐름을 처리하는 로컬 HTTP 서버이다.
+// LoginServer는 치지직 OAuth 로그인 흐름을 처리한다.
 //
-// [ChzzkClient.NewLoginServer]로 생성하고 [LoginServer.Start]로 실행한다.
-// /login 경로에서 인증 페이지로 리디렉션하고, RedirectURI 경로에서 인증 코드를
-// 받아 토큰으로 교환한다. state는 crypto/rand로 생성되어 10분간 유효하며 일회용으로 소비된다.
+// [ChzzkClient.NewLoginServer]로 생성하며, 두 가지 방식으로 사용할 수 있다.
+//
+// [LoginServer.Start]는 자체 HTTP 서버를 열고 블록하는 편의 방식으로,
+// /login 경로에서 인증 페이지로 리디렉션하고 RedirectURI 경로에서 인증 코드를 받아 토큰으로 교환한다.
+//
+// 기존 HTTP 서버에 통합하려면 [LoginServer.LoginHandler]와 [LoginServer.CallbackHandler]를
+// 원하는 경로에 직접 등록한다. 이 경우 서버의 수명과 포트는 호출자가 관리한다.
+//
+// state는 crypto/rand로 생성되어 10분간 유효하며 일회용으로 소비된다.
 type LoginServer struct {
 	client      *ChzzkClient
 	keepAlive   bool         // true면 로그인 후에도 서버 유지 (상시 endpoint)
@@ -67,32 +73,37 @@ func (c *ChzzkClient) NewLoginServer(opts ...LoginServerOption) *LoginServer {
 	return s
 }
 
-// Start는 RedirectURI에서 파싱한 포트로 서버를 열고 블록한다.
-// 일회용 모드: 첫 로그인 성공 후 자동 종료, 발급 토큰 반환.
-// 상시 모드(WithKeepAlive): ctx 취소 전까지 유지, 토큰은 WithOnLogin 콜백으로만 전달.
-func (s *LoginServer) Start(ctx context.Context) (*Tokens, error) {
-	redirect, err := url.Parse(s.client.RedirectURI)
-	if err != nil {
-		return nil, err
-	}
-
-	if redirect.Port() == "" {
-		return nil, errors.New("chzzkgo: RedirectURI must include an explicit port")
-	}
-
-	done := make(chan *Tokens, 1)
-	mux := http.NewServeMux()
-
-	mux.HandleFunc("/login", func(w http.ResponseWriter, r *http.Request) {
+// LoginHandler는 state를 발급하고 치지직 로그인 페이지로 리다이렉트하는 핸들러를 반환한다.
+//
+// 기존 HTTP 서버에 통합할 때 로그인 시작 경로에 등록한다.
+// 서버의 수명과 포트는 호출자가 관리하며, 발급된 state는 [LoginServer.CallbackHandler]가 검증한다.
+func (s *LoginServer) LoginHandler() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
 		state, err := s.issueState()
 		if err != nil {
 			http.Error(w, "failed to issue state", http.StatusInternalServerError)
 			return
 		}
 		http.Redirect(w, r, s.client.GetAuthorizationURL(state), http.StatusFound)
-	})
+	}
+}
 
-	mux.HandleFunc(redirect.Path, func(w http.ResponseWriter, r *http.Request) {
+// CallbackHandler는 OAuth 리디렉션을 처리하는 핸들러를 반환한다.
+//
+// state를 검증·소비하고 인증 코드를 토큰으로 교환한 뒤,
+// 일회용 모드에서는 클라이언트에 토큰을 주입하고 [WithOnLogin] 콜백이 있으면 호출한다.
+// 응답으로는 [WithSuccessPage]로 설정한 HTML을 표시한다.
+//
+// 기존 HTTP 서버에 통합할 때 RedirectURI 경로에 등록한다.
+// 서버의 수명과 포트는 호출자가 관리하며, [WithKeepAlive]의 서버 유지 여부는 [LoginServer.Start] 전용이다.
+func (s *LoginServer) CallbackHandler() http.HandlerFunc {
+	return s.callbackHandler(nil)
+}
+
+// callbackHandler는 콜백 처리 핸들러를 반환한다.
+// onSuccess는 로그인 성공 응답 후 호출된다. (Start의 일회용 모드 종료 통지용)
+func (s *LoginServer) callbackHandler(onSuccess func(*Tokens)) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
 		code, state := r.URL.Query().Get("code"), r.URL.Query().Get("state")
 		if code == "" || state == "" || !s.consumeState(state) {
 			http.Error(w, "invalid code or state", http.StatusBadRequest)
@@ -115,13 +126,40 @@ func (s *LoginServer) Start(ctx context.Context) (*Tokens, error) {
 		w.Header().Set("Content-Type", "text/html; charset=utf-8")
 		w.Write([]byte(s.successHTML))
 
+		if onSuccess != nil {
+			onSuccess(tokens)
+		}
+	}
+}
+
+// Start는 RedirectURI에서 파싱한 포트로 서버를 열고 블록한다.
+// 일회용 모드: 첫 로그인 성공 후 자동 종료, 발급 토큰 반환.
+// 상시 모드(WithKeepAlive): ctx 취소 전까지 유지, 토큰은 WithOnLogin 콜백으로만 전달.
+//
+// 내부적으로 [LoginServer.LoginHandler]를 /login에, [LoginServer.CallbackHandler]에 해당하는
+// 핸들러를 RedirectURI 경로에 등록한 자체 서버를 실행하는 편의 래퍼이다.
+func (s *LoginServer) Start(ctx context.Context) (*Tokens, error) {
+	redirect, err := url.Parse(s.client.RedirectURI)
+	if err != nil {
+		return nil, err
+	}
+
+	if redirect.Port() == "" {
+		return nil, errors.New("chzzkgo: RedirectURI must include an explicit port")
+	}
+
+	done := make(chan *Tokens, 1)
+	mux := http.NewServeMux()
+
+	mux.Handle("/login", s.LoginHandler())
+	mux.Handle(redirect.Path, s.callbackHandler(func(tokens *Tokens) {
 		if !s.keepAlive {
 			select {
 			case done <- tokens:
 			default: // 이미 완료됨
 			}
 		}
-	})
+	}))
 
 	srv := &http.Server{Addr: ":" + redirect.Port(), Handler: mux}
 	errCh := make(chan error, 1)
