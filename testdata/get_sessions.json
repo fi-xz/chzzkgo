@@ -1,0 +1,23 @@
+{
+  "_source": "docs (세션 키는 비밀값이므로 실캡처 금지 — 더미 유지)",
+  "code": 200,
+  "message": "SUCCESS",
+  "content": {
+    "data": [
+      {
+        "sessionKey": "session-key-1",
+        "connectedDate": "2026-07-20 10:00:00",
+        "disconnectedDate": null,
+        "subscribedEvents": [
+          {
+            "eventType": "CHAT",
+            "channelId": "c42cd75ec4855a9edf204a407c3c1dd2"
+          }
+        ]
+      }
+    ],
+    "page": 0,
+    "totalCount": 1,
+    "totalPages": 1
+  }
+}

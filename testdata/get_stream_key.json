@@ -1,0 +1,8 @@
+{
+  "_source": "docs (스트림 키는 비밀값이므로 실캡처 금지 — 더미 유지)",
+  "code": 200,
+  "message": "SUCCESS",
+  "content": {
+    "streamKey": "dummy-stream-key"
+  }
+}

@@ -1,0 +1,56 @@
+{
+    "code": 200,
+    "message": null,
+    "content": {
+        "page": {
+            "next": "4FrOFbuHFB1P429CjVhZDA=="
+        },
+        "data": [
+            {
+                "liveId": 20158841,
+                "liveTitle": "( ܸ ⩌⩊⩌ ܸ )",
+                "liveThumbnailImageUrl": "https://livecloud-thumb.akamaized.net/chzzk/livecloud/KR/stream/26502153/live/20158841/record/56906438/thumbnail/image_{type}.jpg",
+                "concurrentUserCount": 11781,
+                "openDate": "2026-07-24 15:12:12",
+                "adult": false,
+                "tags": ["강지", "스텔라이브", "픽셀네트워크"],
+                "categoryType": "ETC",
+                "liveCategory": "talk",
+                "liveCategoryValue": "talk",
+                "channelId": "b5ed5db484d04faf4d150aedd362f34b",
+                "channelName": "강지",
+                "channelImageUrl": "https://nng-phinf.pstatic.net/MjAyNDA1MDRfODUg/MDAxNzE0NzkwMjMzNjYz.cGE7n_b7Tm0JR9CP3--tcALmEYOPlSc1EHBsYQBbwYIg.XA910LqWFiY_HGYtxcSSgR8fjh1FtnBvKLnSm1-i_SEg.PNG/xczxczxc.PNG"
+            },
+            {
+                "liveId": 20156735,
+                "liveTitle": "안녕하세요",
+                "liveThumbnailImageUrl": "https://livecloud-thumb.akamaized.net/chzzk/livecloud/KR/stream/27622316/live/20156735/record/56901132/thumbnail/image_{type}.jpg",
+                "concurrentUserCount": 4483,
+                "openDate": "2026-07-24 12:20:10",
+                "adult": false,
+                "tags": [],
+                "categoryType": "GAME",
+                "liveCategory": "League_of_Legends",
+                "liveCategoryValue": "리그 오브 레전드",
+                "channelId": "42597020c1a79fb151bd9b9beaa9779b",
+                "channelName": "파카",
+                "channelImageUrl": "https://nng-phinf.pstatic.net/MjAyNDAyMTRfNDMg/MDAxNzA3OTA5MTQ5NDU4.G5K-PKWURUPk7PC42iPSXn6YSOBF2I2PAW1Smzt0Wk4g.nwSoSF4VAZshbbuf2ksHk68NA5dZTqhFequVgvGWEHgg.JPEG/333333.jpg"
+            },
+            {
+                "liveId": 20158781,
+                "liveTitle": "림버스 컴퍼니 개인스토리 감상",
+                "liveThumbnailImageUrl": "https://livecloud-thumb.akamaized.net/chzzk/livecloud/KR/stream/26748450/live/20158781/record/56906259/thumbnail/image_{type}.jpg",
+                "concurrentUserCount": 2628,
+                "openDate": "2026-07-24 15:07:00",
+                "adult": true,
+                "tags": [],
+                "categoryType": "GAME",
+                "liveCategory": "Limbus_Company",
+                "liveCategoryValue": "림버스 컴퍼니",
+                "channelId": "17aa057a8248b53affe30512a91481f5",
+                "channelName": "김도의 취미방송",
+                "channelImageUrl": "https://nng-phinf.pstatic.net/MjAyNTA4MjBfODQg/MDAxNzU1NjE3MjU4NjU2.6ILkpvNLMCDCvcv7tZbKhSxvxMZtNQIBC5M7cVcn_3wg.YZyznLwQ3GDUh73TSEtyvAeNnxeMCEy2vdu8uZAcH7Ag.PNG/profile1.png"
+            }
+        ]
+    }
+}

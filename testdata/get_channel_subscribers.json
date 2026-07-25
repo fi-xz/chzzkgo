@@ -1,0 +1,10 @@
+{
+    "code": 200,
+    "message": null,
+    "content": {
+        "page": 0,
+        "totalCount": 0,
+        "totalPages": 0,
+        "data": []
+    }
+}

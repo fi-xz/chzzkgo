@@ -1,0 +1,26 @@
+{
+    "code": 200,
+    "message": null,
+    "content": {
+        "page": 0,
+        "totalCount": 3,
+        "totalPages": 1,
+        "data": [
+            {
+                "channelId": "f0000000000000000000000000000001",
+                "channelName": "팔로워01",
+                "createdDate": "2026-07-18 23:32:12"
+            },
+            {
+                "channelId": "f0000000000000000000000000000002",
+                "channelName": "팔로워02",
+                "createdDate": "2026-06-13 21:40:02"
+            },
+            {
+                "channelId": "f0000000000000000000000000000003",
+                "channelName": "팔로워03",
+                "createdDate": "2026-05-25 17:27:42"
+            }
+        ]
+    }
+}

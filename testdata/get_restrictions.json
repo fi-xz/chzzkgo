@@ -1,0 +1,23 @@
+{
+    "code": 200,
+    "message": null,
+    "content": {
+        "page": {
+            "next": "ZmFrZS1jdXJzb3ItdG9rZW4="
+        },
+        "data": [
+            {
+                "restrictedChannelId": "e0000000000000000000000000000001",
+                "restrictedChannelName": "제한채널01",
+                "createdDate": "2026-01-25 18:07:37",
+                "releaseDate": null
+            },
+            {
+                "restrictedChannelId": "e0000000000000000000000000000002",
+                "restrictedChannelName": "제한채널02",
+                "createdDate": "2024-06-02 20:56:24",
+                "releaseDate": null
+            }
+        ]
+    }
+}

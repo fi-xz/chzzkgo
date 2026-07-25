@@ -1,0 +1,8 @@
+{
+  "_source": "docs (세션 URL의 auth 파라미터는 비밀값이므로 실캡처 금지 — 더미 유지)",
+  "code": 200,
+  "message": "SUCCESS",
+  "content": {
+    "url": "wss://ssio10.nchat.naver.com:443?auth=dummy-session-auth"
+  }
+}
