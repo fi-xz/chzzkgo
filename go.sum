@@ -1,2 +1,6 @@
+github.com/coder/websocket v1.8.15 h1:6B2JPeOGlpff2Uz6vOEH1Vzpi0iUz20A+lPVhPHtNUA=
+github.com/coder/websocket v1.8.15/go.mod h1:NX3SzP+inril6yawo5CQXx8+fk145lPDC6pumgx0mVg=
+github.com/fi-xz/socketio2 v0.1.0 h1:uXd9yvJjI/IcWRqseV2u+Wsiz8DAVT+zEAzCzTuqg58=
+github.com/fi-xz/socketio2 v0.1.0/go.mod h1:nu+d9ifnsB7UdmQOHoK5miMikl1Kv/9cgEH8adBKFNQ=
 github.com/joho/godotenv v1.5.1 h1:7eLL/+HRGLY0ldzfGMeQkb7vMd0as4CfYvUVzLqw0N0=
 github.com/joho/godotenv v1.5.1/go.mod h1:f4LDr5Voq0i2e/R5DDNOoa2zzDfwtkZa6DnEwAbqwq4=

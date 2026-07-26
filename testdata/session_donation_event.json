@@ -1,0 +1,10 @@
+{
+    "donationType": "CHAT",
+    "channelId": "0a1b2c3d4e5f60718293a4b5c6d7e8f9",
+    "donatorChannelId": "TEST",
+    "donatorNickname": "TEST",
+    "payAmount": 1000,
+    "donationText": "유저가 입력한 후원메시지입니다",
+    "emojis": {},
+    "eventSentAt": "2026-07-26T03:14:28.690447802"
+}

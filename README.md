@@ -4,6 +4,10 @@ A Go library for streaming platform 치지직(CHZZK).
 
 치지직 Open API의 Go SDK입니다. Go 1.26 이상이 필요합니다.
 
+REST API와 세션 서버의 실시간 이벤트 수신을 모두 지원합니다.
+실시간 이벤트에는 Socket.IO 2.x 클라이언트인
+[socketio2](https://github.com/fi-xz/socketio2)를 사용합니다.
+
 > 이 프로젝트는 네이버(NAVER) 및 치지직(CHZZK)의 공식 라이브러리가 아닙니다.
 
 ## Installation
@@ -55,7 +59,7 @@ Client 인증 API: `GetChannels`, `SearchCategory`, `GetLiveList`, `CreateSessio
 | 채팅 | ✅ | `SendChatMessage`, `SetChatNotice`, `GetChatSettings`, `SetChatSettings`, `BlindChatMessage` |
 | 활동제한 | ✅ | `AddRestriction`, `RemoveRestriction`, `GetRestrictions`, `AddTemporaryRestriction`, `RemoveTemporaryRestriction` |
 | 세션 (URL 발급·목록·이벤트 구독/해제) | ✅ | `CreateSessionWithClient`, `CreateSessionWithUser`, `GetSessionsWithClient`, `GetSessionsWithUser`, `Subscribe·UnsubscribeChatEvent`, `Subscribe·UnsubscribeDonationEvent`, `Subscribe·UnsubscribeSubscriptionEvent` |
-| 세션 (실시간 이벤트 수신) | ❌ | [알려진 제한](#알려진-제한) 참고 |
+| 세션 (실시간 이벤트 수신) | ✅ | `SessionSocket`, `ConnectSessionWithUser`, `ConnectSessionWithClient` |
 | 드롭스 | ❌ | 미구현 |
 
 ## OAuth 로그인
@@ -135,6 +139,88 @@ err := chzzk.SetLiveSettings(ctx, chzzkgo.LiveSettingsPatch{
 })
 ```
 
+## 실시간 이벤트 수신
+
+세션 서버에 접속하면 채팅·후원·구독 이벤트를 실시간으로 받을 수 있습니다.
+세션 URL을 발급받고 소켓에 연결한 뒤, 세션 키로 원하는 이벤트를 구독하는 순서입니다.
+
+```go
+socket, err := chzzk.ConnectSessionWithUser(ctx, func(s *chzzkgo.SessionSocket) {
+    // 핸들러는 반드시 연결 전에 등록합니다.
+    s.OnChat(func(e chzzkgo.ChatEvent) {
+        fmt.Printf("%s: %s\n", e.Profile.Nickname, e.Content)
+    })
+    s.OnDonation(func(e chzzkgo.DonationEvent) {
+        fmt.Printf("%s님이 %d원 후원\n", e.DonatorNickname, e.PayAmount)
+    })
+})
+
+if err != nil {
+    return err
+}
+
+defer socket.Close()
+
+// 연결만으로는 이벤트가 오지 않습니다. 세션 키로 구독해야 합니다.
+if err := chzzk.SubscribeChatEvent(ctx, socket.SessionKey()); err != nil {
+    return err
+}
+
+<-socket.Done()
+return socket.Err()
+```
+
+세션 URL을 직접 다루려면 `NewSessionSocket`을 사용합니다.
+
+```go
+session, err := chzzk.CreateSessionWithUser(ctx)
+socket := chzzkgo.NewSessionSocket(session.URL)
+socket.OnChat(...)
+err = socket.Connect(ctx)
+```
+
+`Connect`는 서버가 세션 키를 보낼 때까지 기다린 뒤 반환하므로, 반환 직후
+`SessionKey()`로 구독을 시작할 수 있습니다.
+
+### 재연결은 하지 않습니다
+
+세션 URL은 한 번만 쓸 수 있어 같은 URL로 다시 접속할 수 없습니다.
+`Done()`이 닫히면 `Err()`로 원인을 확인하고 세션을 새로 발급받아 다시 연결하세요.
+`ConnectSessionWithUser`를 반복 호출하면 발급과 연결을 한 번에 처리할 수 있습니다.
+
+```go
+for {
+    socket, err := chzzk.ConnectSessionWithUser(ctx, register)
+    if err != nil {
+        return err
+    }
+
+    if err := chzzk.SubscribeChatEvent(ctx, socket.SessionKey()); err != nil {
+        return err
+    }
+
+    <-socket.Done()
+    socket.Close()
+}
+```
+
+서버가 구독을 취소하면 `OnSystem`으로 `revoked` 시스템 이벤트가 전달됩니다.
+이 경우 연결은 살아 있지만 해당 이벤트는 더 이상 오지 않으므로 다시 구독해야 합니다.
+
+### 이벤트 시각
+
+`eventSentAt`은 오프셋 표기 없이 KST로 전달되므로 `EventTime`이 이를 해석합니다.
+`ChatEvent.MessageTime`은 epoch 밀리초(UTC)이며 `MessageAt()`으로 변환합니다.
+채팅 블라인드에 필요한 값은 `BlindRequest()`로 바로 만들 수 있습니다.
+
+```go
+s.OnChat(func(e chzzkgo.ChatEvent) {
+    if strings.Contains(e.Content, "금지어") {
+        chzzk.BlindChatMessage(ctx, e.BlindRequest())
+    }
+})
+```
+
 ## 다른 채널 토큰으로 호출
 
 세션 이벤트 구독 등에서 다른 계정의 액세스 토큰을 일시적으로 사용할 수 있습니다.
@@ -166,15 +252,16 @@ case errors.As(err, &apiErr):
 
 ## 알려진 제한
 
-### 세션 실시간 이벤트 (Socket.IO)
+### 구독 이벤트는 미검증입니다
 
-치지직 세션 API의 실시간 이벤트 수신은 Socket.IO 2.x 프로토콜을 사용합니다.
-현재 Go 생태계에 Socket.IO 클라이언트 2.x를 안정적으로 지원하는 라이브러리가
-없어, 소켓 연결 기능은 미구현 상태입니다.
+`SubscriptionEvent` 구조체는 공식 문서만을 근거로 정의했습니다.
+구독 기능이 치지직 프로 회원에게만 열려 있어 실제 페이로드를 관측하지 못했고,
+스튜디오의 구독 알림 테스트는 후원 알림과 달리 세션 소켓으로 전달되지 않습니다.
 
-세션 URL 발급(`CreateSessionWithClient` 등)과 이벤트 구독/해제(`SubscribeChatEvent` 등)는
-구현되어 있으므로, 소켓 연결 자체는 별도 Socket.IO 클라이언트로 직접 처리해야
-합니다. Go에서 안정적인 2.x 클라이언트가 확보되면 지원 예정입니다.
+문서의 타입 표기가 실제와 다른 전례가 있으므로(후원의 `payAmount`는 문서상
+문자열이지만 실제로는 숫자입니다) 값이 비어 있다면 `OnAny`로 원본을 확인하세요.
+
+### 드롭스 API는 미구현입니다
 
 ## Testing
 
