@@ -62,10 +62,14 @@ func New(clientID, clientSecret, redirectURI string) *Client {
 
 // NewWithoutAuth는 자격 증명 없이 새 [Client]를 생성한다.
 //
-// 클라이언트 ID/시크릿과 리디렉션 URI가 비어 있는 상태로 생성되므로,
-// 이 상태로는 Client 인증 API도 OAuth 토큰이 필요한 API도 호출할 수 없다.
-// 필요한 값은 [Client.ClientID] 등의 필드에 직접 채우거나
-// [Client.SetTokens]로 토큰을 주입해 사용한다.
+// 이미 액세스 토큰을 가지고 있어 세션 발급 정도만 하면 되는 경우처럼,
+// [New]에 넘길 값이 마땅치 않을 때 클라이언트를 빠르게 만드는 용도이다.
+// 필요한 값은 ClientID 등의 필드에 직접 채우거나 [Client.SetTokens],
+// [Client.SetAccessToken]으로 주입한다.
+//
+// 채우지 않은 값에 의존하는 API는 호출할 수 없다. 액세스 토큰만 주입한
+// 상태라면 Client 인증 API(ClientID/ClientSecret 필요)와 자동 토큰
+// 갱신(리프레시 토큰 필요)은 동작하지 않는다.
 func NewWithoutAuth() *Client {
 	return New("", "", "")
 }

@@ -271,8 +271,8 @@ func (c *Client) SetRefreshToken(refreshToken string) {
 	c.auth.tokens.RefreshToken = refreshToken
 }
 
-// SetScope는 클라이언트가 API 호출에 사용할 Scope 데이터만을 주입한다.
-func (c *Client) SetScope(scope Scopes) {
+// SetScopes는 클라이언트가 API 호출에 사용할 Scope 데이터만을 주입한다.
+func (c *Client) SetScopes(scope Scopes) {
 	c.auth.mu.Lock()
 	defer c.auth.mu.Unlock()
 

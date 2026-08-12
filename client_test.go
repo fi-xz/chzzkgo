@@ -68,7 +68,7 @@ func TestSetTokenFields(t *testing.T) {
 		t.Fatalf("GetUser error = %v, want MissingScopeError", err)
 	}
 
-	chzzk.SetScope(chzzkgo.Scopes{chzzkgo.UserRead})
+	chzzk.SetScopes(chzzkgo.Scopes{chzzkgo.UserRead})
 
 	if _, err := chzzk.GetUser(context.Background()); err != nil {
 		t.Fatal(err)
@@ -84,7 +84,7 @@ func TestSetTokenFields(t *testing.T) {
 func TestSetTokenFieldsOnFreshClient(t *testing.T) {
 	chzzk := chzzkgo.NewWithoutAuth()
 
-	chzzk.SetScope(chzzkgo.Scopes{chzzkgo.UserRead})
+	chzzk.SetScopes(chzzkgo.Scopes{chzzkgo.UserRead})
 	chzzk.SetRefreshToken("refresh")
 
 	// 액세스 토큰이 아직 없으므로 인증 오류여야 한다. (panic이 아니라)
