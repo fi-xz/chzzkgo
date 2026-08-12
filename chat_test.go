@@ -42,7 +42,7 @@ func TestSendChatMessage(t *testing.T) {
 
 // TestSendChatMessageTooLong은 100자(rune 기준) 초과 메시지가 요청 전에 거부되는지 검증한다.
 func TestSendChatMessageTooLong(t *testing.T) {
-	chzzk := chzzkgo.NewChzzkClient("test-client-id", "test-client-secret", "http://localhost:12940/callback")
+	chzzk := chzzkgo.New("test-client-id", "test-client-secret", "http://localhost:12940/callback")
 	chzzk.SetTokens("access", "refresh", chzzkgo.Scopes{chzzkgo.ChatMessageWrite})
 
 	// 한글 101자 — 바이트 수가 아니라 rune 수 기준으로 거부되어야 한다
@@ -94,7 +94,7 @@ func TestSetChatNotice(t *testing.T) {
 	})
 
 	t.Run("빈 요청 거부", func(t *testing.T) {
-		chzzk := chzzkgo.NewChzzkClient("test-client-id", "test-client-secret", "http://localhost:12940/callback")
+		chzzk := chzzkgo.New("test-client-id", "test-client-secret", "http://localhost:12940/callback")
 		chzzk.SetTokens("access", "refresh", chzzkgo.Scopes{chzzkgo.ChatNoticeWrite})
 
 		err := chzzk.SetChatNotice(context.Background(), chzzkgo.ChatNoticeRequest{})
@@ -158,7 +158,7 @@ func TestBlindChatMessage(t *testing.T) {
 	})
 
 	t.Run("필수 필드 누락 거부", func(t *testing.T) {
-		chzzk := chzzkgo.NewChzzkClient("test-client-id", "test-client-secret", "http://localhost:12940/callback")
+		chzzk := chzzkgo.New("test-client-id", "test-client-secret", "http://localhost:12940/callback")
 		chzzk.SetTokens("access", "refresh", chzzkgo.Scopes{chzzkgo.ChatMessageWrite})
 
 		err := chzzk.BlindChatMessage(context.Background(), chzzkgo.ChatBlindRequest{

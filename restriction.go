@@ -30,7 +30,7 @@ type RestrictionPages struct {
 // AddRestriction은 targetChannelId에 대해 활동 제한을 추가한다.
 //
 // [RestrictionWrite](활동제한 쓰기) [Scope]가 필요하며, 없으면 [MissingScopeError]를 반환한다.
-func (c *ChzzkClient) AddRestriction(ctx context.Context, targetChannelID string) error {
+func (c *Client) AddRestriction(ctx context.Context, targetChannelID string) error {
 	if err := c.requireScope(RestrictionWrite); err != nil {
 		return err
 	}
@@ -50,7 +50,7 @@ func (c *ChzzkClient) AddRestriction(ctx context.Context, targetChannelID string
 // RemoveRestriction은 targetChannelId에 대해 활동 제한을 해제한다.
 //
 // [RestrictionWrite](활동제한 쓰기) [Scope]가 필요하며, 없으면 [MissingScopeError]를 반환한다.
-func (c *ChzzkClient) RemoveRestriction(ctx context.Context, targetChannelID string) error {
+func (c *Client) RemoveRestriction(ctx context.Context, targetChannelID string) error {
 	if err := c.requireScope(RestrictionWrite); err != nil {
 		return err
 	}
@@ -72,7 +72,7 @@ func (c *ChzzkClient) RemoveRestriction(ctx context.Context, targetChannelID str
 // [RestrictionRead](활동제한 조회) [Scope]가 필요하며, 없으면 [MissingScopeError]를 반환한다.
 // 선택적 파라미터로 size, next를 지정할 수 있다. [WithSize], [WithNext]를 참고.
 // size의 경우, 지정되지 않았다면 서버에서 기본값 30을 사용하며, 최소 1에서 최대 30까지 지정 가능하다.
-func (c *ChzzkClient) GetRestrictions(ctx context.Context, opts ...QueryOption) (*RestrictionPages, error) {
+func (c *Client) GetRestrictions(ctx context.Context, opts ...QueryOption) (*RestrictionPages, error) {
 	if err := c.requireScope(RestrictionRead); err != nil {
 		return nil, err
 	}
@@ -96,7 +96,7 @@ func (c *ChzzkClient) GetRestrictions(ctx context.Context, opts ...QueryOption) 
 // 임시 제한을 위해서는 chatChannelID(채팅 채널 ID)가 필요하다. 이는 Session의 채팅 구독 이벤트 메시지 값에서 확인할 수 있다. (https://chzzk.gitbook.io/chzzk/chzzk-api/session#message-event-subscribe-chat)
 //
 // [RestrictionWrite](활동제한 쓰기) [Scope]가 필요하며, 없으면 [MissingScopeError]를 반환한다.
-func (c *ChzzkClient) AddTemporaryRestriction(ctx context.Context, targetChannelID, chatChannelID string) error {
+func (c *Client) AddTemporaryRestriction(ctx context.Context, targetChannelID, chatChannelID string) error {
 	if err := c.requireScope(RestrictionWrite); err != nil {
 		return err
 	}
@@ -119,7 +119,7 @@ func (c *ChzzkClient) AddTemporaryRestriction(ctx context.Context, targetChannel
 // 임시 제한 해제를 위해서는 chatChannelID(채팅 채널 ID)가 필요하다. 이는 Session의 채팅 구독 이벤트 메시지 값에서 확인할 수 있다. (https://chzzk.gitbook.io/chzzk/chzzk-api/session#message-event-subscribe-chat)
 //
 // [RestrictionWrite](활동제한 쓰기) [Scope]가 필요하며, 없으면 [MissingScopeError]를 반환한다.
-func (c *ChzzkClient) RemoveTemporaryRestriction(ctx context.Context, targetChannelID, chatChannelID string) error {
+func (c *Client) RemoveTemporaryRestriction(ctx context.Context, targetChannelID, chatChannelID string) error {
 	if err := c.requireScope(RestrictionWrite); err != nil {
 		return err
 	}

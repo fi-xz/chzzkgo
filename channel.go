@@ -113,7 +113,7 @@ type ChannelSubscriberPages struct {
 // 조회를 원하는 채널 ID들이 포함된 channelIDs가 필요하다. channelIDs는 최대 20개까지 요청 가능하다.
 //
 // Client 인증을 사용하므로 OAuth 토큰 없이 호출 가능하다.
-func (c *ChzzkClient) GetChannels(ctx context.Context, channelIDs []string) (*ChannelPages, error) {
+func (c *Client) GetChannels(ctx context.Context, channelIDs []string) (*ChannelPages, error) {
 	q := url.Values{}
 	q.Set("channelIds", strings.Join(channelIDs, ","))
 
@@ -129,7 +129,7 @@ func (c *ChzzkClient) GetChannels(ctx context.Context, channelIDs []string) (*Ch
 // GetChannelManagers는 현재 인증된 사용자의 채널 관리자 정보를 조회한다.
 //
 // [ChannelManagerRead](채널 관리자 조회) [Scope]가 필요하며, 없으면 [MissingScopeError]를 반환한다.
-func (c *ChzzkClient) GetChannelManagers(ctx context.Context) (*StreamingRolePages, error) {
+func (c *Client) GetChannelManagers(ctx context.Context) (*StreamingRolePages, error) {
 	if err := c.requireScope(ChannelManagerRead); err != nil {
 		return nil, err
 	}
@@ -150,7 +150,7 @@ func (c *ChzzkClient) GetChannelManagers(ctx context.Context) (*StreamingRolePag
 // 선택적 파라미터로 size, page를 지정할 수 있다. [WithSize], [WithPage]를 참고.
 // size가 지정되지 않았다면 서버에서 기본값 30을 사용하며, 최소 1에서 최대 50까지 지정 가능하다.
 // page는 0부터 시작하며, 지정되지 않았다면 서버에서 기본값 0을 사용한다.
-func (c *ChzzkClient) GetChannelFollowers(ctx context.Context, opts ...QueryOption) (*ChannelFollowerPages, error) {
+func (c *Client) GetChannelFollowers(ctx context.Context, opts ...QueryOption) (*ChannelFollowerPages, error) {
 	// 채널 팔로워 조회는 ChannelInfoRead Scope 권한이 필요.
 	// 네이버 문서상에서는 "채널 팔로워 조회"가 필요하다고 명시되어있으나
 	// 고객센터 문의 결과 "채널 정보 조회" 권한으로 조회가 가능하다고 답변 받은 바 있음.
@@ -179,7 +179,7 @@ func (c *ChzzkClient) GetChannelFollowers(ctx context.Context, opts ...QueryOpti
 //
 // 선택적 파라미터로 size를 지정할 수 있다. [WithSize]를 참고.
 // size가 지정되지 않았다면 서버에서 기본값 30을 사용하며, 최소 1에서 최대 50까지 지정 가능하다.
-func (c *ChzzkClient) GetChannelSubscribers(ctx context.Context, opts ...QueryOption) (*ChannelSubscriberPages, error) {
+func (c *Client) GetChannelSubscribers(ctx context.Context, opts ...QueryOption) (*ChannelSubscriberPages, error) {
 	// 채널 구독자 조회는 ChannelInfoRead Scope 권한이 필요.
 	// 네이버 문서상에서는 "채널 구독자"가 필요하다고 명시되어있으나
 	// 고객센터 문의 결과 "채널 정보 조회" 권한으로 조회가 가능하다고 답변 받은 바 있음.

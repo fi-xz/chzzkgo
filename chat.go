@@ -29,7 +29,7 @@ type ChatSettings struct {
 	ChatEmojiMode bool `json:"chatEmojiMode"`
 }
 
-// ChatSettingsPatch는 [ChzzkClient.SetChatSettings]로 변경할 채팅 설정 정보를 나타낸다.
+// ChatSettingsPatch는 [Client.SetChatSettings]로 변경할 채팅 설정 정보를 나타낸다.
 //
 // nil인 필드는 요청에서 제외되어 변경되지 않는다.
 // 값 지정에는 내장 함수 new를 사용할 수 있다. (예: new(true))
@@ -110,7 +110,7 @@ type ChatBlindRequest struct {
 // message에는 전송할 채팅 메시지를 담은 문자열을 전달한다. 메시지 길이는 최대 100자까지 허용된다.
 //
 // [ChatMessageWrite](채팅 메시지 쓰기) [Scope]가 필요하며, 없으면 [MissingScopeError]를 반환한다.
-func (c *ChzzkClient) SendChatMessage(ctx context.Context, message string) (*MessageResult, error) {
+func (c *Client) SendChatMessage(ctx context.Context, message string) (*MessageResult, error) {
 	if err := c.requireScope(ChatMessageWrite); err != nil {
 		return nil, err
 	}
@@ -129,7 +129,7 @@ func (c *ChzzkClient) SendChatMessage(ctx context.Context, message string) (*Mes
 // Message를 지정할 경우 채팅 공지 메시지 내용을 새로 전송하여 설정하고, MessageID를 지정할 경우 이미 전송된 채팅 메시지를 공지로 설정한다. 두 필드 모두 설정하지 않으면 에러를 반환한다.
 //
 // [ChatNoticeWrite](채팅 공지 쓰기) [Scope]가 필요하며, 없으면 [MissingScopeError]를 반환한다.
-func (c *ChzzkClient) SetChatNotice(ctx context.Context, req ChatNoticeRequest) error {
+func (c *Client) SetChatNotice(ctx context.Context, req ChatNoticeRequest) error {
 	if err := c.requireScope(ChatNoticeWrite); err != nil {
 		return err
 	}
@@ -151,7 +151,7 @@ func (c *ChzzkClient) SetChatNotice(ctx context.Context, req ChatNoticeRequest) 
 // GetChatSettings는 채팅 설정 정보를 조회한다.
 //
 // [ChatSettingsRead](채팅 설정 조회) [Scope]가 필요하며, 없으면 [MissingScopeError]를 반환한다.
-func (c *ChzzkClient) GetChatSettings(ctx context.Context) (*ChatSettings, error) {
+func (c *Client) GetChatSettings(ctx context.Context) (*ChatSettings, error) {
 	if err := c.requireScope(ChatSettingsRead); err != nil {
 		return nil, err
 	}
@@ -165,7 +165,7 @@ func (c *ChzzkClient) GetChatSettings(ctx context.Context) (*ChatSettings, error
 // nil 필드는 전송되지 않으며, 서버는 전송되지 않은 필드의 기존 값을 유지한다.
 //
 // [ChatSettingsWrite](채팅 설정 변경) [Scope]가 필요하며, 없으면 [MissingScopeError]를 반환한다.
-func (c *ChzzkClient) SetChatSettings(ctx context.Context, newChatSettings ChatSettingsPatch) (*ChatSettings, error) {
+func (c *Client) SetChatSettings(ctx context.Context, newChatSettings ChatSettingsPatch) (*ChatSettings, error) {
 	if err := c.requireScope(ChatSettingsWrite); err != nil {
 		return nil, err
 	}
@@ -193,7 +193,7 @@ func (c *ChzzkClient) SetChatSettings(ctx context.Context, newChatSettings ChatS
 // 이는 Session의 채팅 구독 이벤트 메시지 값에서 확인할 수 있다. (https://chzzk.gitbook.io/chzzk/chzzk-api/session#message-event-subscribe-chat)
 //
 // [ChatMessageWrite](채팅 메시지 쓰기) [Scope]가 필요하며, 없으면 [MissingScopeError]를 반환한다.
-func (c *ChzzkClient) BlindChatMessage(ctx context.Context, req ChatBlindRequest) error {
+func (c *Client) BlindChatMessage(ctx context.Context, req ChatBlindRequest) error {
 	if err := c.requireScope(ChatMessageWrite); err != nil {
 		return err
 	}

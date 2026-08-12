@@ -16,7 +16,7 @@ var ErrSessionClosed = errors.New("chzzkgo: session socket closed")
 
 // SessionSocket은 세션 서버에 접속해 실시간 이벤트를 수신한다.
 //
-// [ChzzkClient.CreateSessionWithClient]나 [ChzzkClient.CreateSessionWithUser]가
+// [Client.CreateSessionWithClient]나 [Client.CreateSessionWithUser]가
 // 반환한 세션 URL로 [NewSessionSocket]을 만들어 사용한다.
 //
 //	socket := chzzkgo.NewSessionSocket(session.URL)
@@ -41,7 +41,7 @@ var ErrSessionClosed = errors.New("chzzkgo: session socket closed")
 // 재연결은 하지 않는다. 세션 URL은 한 번만 쓸 수 있어 같은 URL로 다시 접속하는
 // 것이 옳지 않기 때문이다. [SessionSocket.Done]이 닫히면 [SessionSocket.Err]로
 // 원인을 확인하고, 세션을 새로 발급받아 소켓을 다시 만들어야 한다.
-// [ChzzkClient.ConnectSessionWithUser]와 [ChzzkClient.ConnectSessionWithClient]가
+// [Client.ConnectSessionWithUser]와 [Client.ConnectSessionWithClient]가
 // 이 과정을 대신해 준다.
 type SessionSocket struct {
 	conn *socketio2.Client
@@ -110,7 +110,7 @@ func NewSessionSocket(sessionURL string, opts ...SessionSocketOption) *SessionSo
 // OnChat은 채팅 이벤트 핸들러를 등록한다.
 //
 // [ChatMessageRead](채팅 메시지 조회) [Scope]로 채팅 이벤트를 구독해야 호출된다.
-// [ChzzkClient.SubscribeChatEvent] 참고.
+// [Client.SubscribeChatEvent] 참고.
 func (s *SessionSocket) OnChat(fn func(ChatEvent)) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -120,7 +120,7 @@ func (s *SessionSocket) OnChat(fn func(ChatEvent)) {
 // OnDonation은 후원 이벤트 핸들러를 등록한다.
 //
 // [DonationRead](후원 조회) [Scope]로 후원 이벤트를 구독해야 호출된다.
-// [ChzzkClient.SubscribeDonationEvent] 참고.
+// [Client.SubscribeDonationEvent] 참고.
 func (s *SessionSocket) OnDonation(fn func(DonationEvent)) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -130,7 +130,7 @@ func (s *SessionSocket) OnDonation(fn func(DonationEvent)) {
 // OnSubscription은 구독 이벤트 핸들러를 등록한다.
 //
 // [SubscriptionRead](구독 조회) [Scope]로 구독 이벤트를 구독해야 호출된다.
-// [ChzzkClient.SubscribeSubscriptionEvent] 참고.
+// [Client.SubscribeSubscriptionEvent] 참고.
 //
 // [SubscriptionEvent]는 실제 페이로드를 관측하지 못한 미검증 구조체이다.
 func (s *SessionSocket) OnSubscription(fn func(SubscriptionEvent)) {
@@ -220,7 +220,7 @@ func (s *SessionSocket) connect(ctx context.Context) error {
 
 // SessionKey는 서버가 보낸 세션 키를 반환한다.
 //
-// 이 값으로 [ChzzkClient.SubscribeChatEvent] 등을 호출해야 실제 이벤트가 오기
+// 이 값으로 [Client.SubscribeChatEvent] 등을 호출해야 실제 이벤트가 오기
 // 시작한다. [SessionSocket.Connect]가 성공했다면 항상 채워져 있다.
 func (s *SessionSocket) SessionKey() string {
 	s.mu.Lock()
@@ -385,7 +385,7 @@ func (s *SessionSocket) fireError(err error) {
 //
 //		<-socket.Done()
 //	}
-func (c *ChzzkClient) ConnectSessionWithUser(ctx context.Context, setup func(*SessionSocket), opts ...SessionSocketOption) (*SessionSocket, error) {
+func (c *Client) ConnectSessionWithUser(ctx context.Context, setup func(*SessionSocket), opts ...SessionSocketOption) (*SessionSocket, error) {
 	session, err := c.CreateSessionWithUser(ctx)
 
 	if err != nil {
@@ -399,8 +399,8 @@ func (c *ChzzkClient) ConnectSessionWithUser(ctx context.Context, setup func(*Se
 //
 // Client 인증을 사용하므로 OAuth 토큰 없이 호출 가능하다.
 // setup은 접속 전에 호출되므로 여기에서 핸들러를 등록한다.
-// [ChzzkClient.ConnectSessionWithUser] 참고.
-func (c *ChzzkClient) ConnectSessionWithClient(ctx context.Context, setup func(*SessionSocket), opts ...SessionSocketOption) (*SessionSocket, error) {
+// [Client.ConnectSessionWithUser] 참고.
+func (c *Client) ConnectSessionWithClient(ctx context.Context, setup func(*SessionSocket), opts ...SessionSocketOption) (*SessionSocket, error) {
 	session, err := c.CreateSessionWithClient(ctx)
 
 	if err != nil {

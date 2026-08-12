@@ -161,7 +161,7 @@ func (e ChatEvent) MessageAt() time.Time {
 }
 
 // BlindRequest는 이 채팅을 블라인드 처리하기 위한 요청을 만든다.
-// [ChzzkClient.BlindChatMessage]에 그대로 전달할 수 있다.
+// [Client.BlindChatMessage]에 그대로 전달할 수 있다.
 func (e ChatEvent) BlindRequest() ChatBlindRequest {
 	return ChatBlindRequest{
 		ChatChannelID:   e.ChatChannelID,

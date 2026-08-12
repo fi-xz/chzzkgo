@@ -12,13 +12,13 @@ import (
 )
 
 // newMockClient는 handler로 응답하는 로컬 서버를 띄우고 그쪽을 바라보는 클라이언트를 반환한다.
-func newMockClient(t *testing.T, handler http.Handler) *chzzkgo.ChzzkClient {
+func newMockClient(t *testing.T, handler http.Handler) *chzzkgo.Client {
 	t.Helper()
 
 	srv := httptest.NewServer(handler)
 	t.Cleanup(srv.Close)
 
-	chzzk := chzzkgo.NewChzzkClient("test-client-id", "test-client-secret", "http://localhost:12940/callback")
+	chzzk := chzzkgo.New("test-client-id", "test-client-secret", "http://localhost:12940/callback")
 	chzzk.SetBaseURL(srv.URL)
 
 	return chzzk

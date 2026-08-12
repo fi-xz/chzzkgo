@@ -13,7 +13,7 @@ import (
 
 // LoginServer는 치지직 OAuth 로그인 흐름을 처리한다.
 //
-// [ChzzkClient.NewLoginServer]로 생성하며, 두 가지 방식으로 사용할 수 있다.
+// [Client.NewLoginServer]로 생성하며, 두 가지 방식으로 사용할 수 있다.
 //
 // [LoginServer.Start]는 자체 HTTP 서버를 열고 블록하는 편의 방식으로,
 // /login 경로에서 인증 페이지로 리디렉션하고 RedirectURI 경로에서 인증 코드를 받아 토큰으로 교환한다.
@@ -23,7 +23,7 @@ import (
 //
 // state는 crypto/rand로 생성되어 10분간 유효하며 일회용으로 소비된다.
 type LoginServer struct {
-	client      *ChzzkClient
+	client      *Client
 	keepAlive   bool         // true면 로그인 후에도 서버 유지 (상시 endpoint)
 	setTokens   bool         // true면 로그인 성공 시 client에 토큰 주입
 	onLogin     func(Tokens) // 로그인 성공마다 호출 (상시 모드의 토큰 전달 통로)
@@ -60,7 +60,7 @@ func WithSuccessPage(html string) LoginServerOption {
 //
 // 기본값은 일회용 모드로, 첫 로그인 성공 시 서버가 종료되고
 // 발급된 토큰이 클라이언트에 주입된다. 상시 모드는 [WithKeepAlive]를 참고.
-func (c *ChzzkClient) NewLoginServer(opts ...LoginServerOption) *LoginServer {
+func (c *Client) NewLoginServer(opts ...LoginServerOption) *LoginServer {
 	s := &LoginServer{
 		client:      c,
 		setTokens:   true, // 일회용 모드 기본값: client에 주입

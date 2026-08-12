@@ -31,7 +31,7 @@ import (
 )
 
 func main() {
-    chzzk := chzzkgo.NewChzzkClient("SAMPLE_CLIENT_ID", "SAMPLE_CLIENT_SECRET", "http://localhost:8080/callback")
+    chzzk := chzzkgo.New("SAMPLE_CLIENT_ID", "SAMPLE_CLIENT_SECRET", "http://localhost:8080/callback")
 
     lives, err := chzzk.GetLiveList(context.Background())
 
@@ -67,7 +67,7 @@ Client 인증 API: `GetChannels`, `SearchCategory`, `GetLiveList`, `CreateSessio
 사용자 권한이 필요한 API는 OAuth 토큰이 필요합니다. 내장 [LoginServer](server.go)로 로그인 흐름을 처리할 수 있습니다.
 
 ```go
-chzzk := chzzkgo.NewChzzkClient(clientID, clientSecret, "http://localhost:8080/callback")
+chzzk := chzzkgo.New(clientID, clientSecret, "http://localhost:8080/callback")
 
 // http://localhost:8080/login 접속 → 치지직 로그인 → 첫 로그인 성공 시 서버 자동 종료
 tokens, err := chzzk.NewLoginServer().Start(context.Background())
@@ -230,7 +230,7 @@ ctx := chzzkgo.WithAccessToken(context.Background(), otherChannelToken)
 err := chzzk.SubscribeChatEvent(ctx, sessionKey)
 ```
 
-다중 계정을 다룰 때는 계정당 `ChzzkClient` 하나를 사용하는 것이 기본 방침이며, 토큰 오버라이드는 위와 같은 특수 케이스 전용입니다.
+다중 계정을 다룰 때는 계정당 `Client` 하나를 사용하는 것이 기본 방침이며, 토큰 오버라이드는 위와 같은 특수 케이스 전용입니다.
 
 ## 에러 처리
 

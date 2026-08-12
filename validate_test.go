@@ -13,7 +13,7 @@ import (
 // TestValidateSize는 size 범위 검증이 네트워크 요청 전에 실패하는지 검증한다.
 // (클라이언트의 baseURL이 실서버를 가리키지만 요청은 발생하지 않아야 한다)
 func TestValidateSize(t *testing.T) {
-	chzzk := chzzkgo.NewChzzkClient("test-client-id", "test-client-secret", "http://localhost:12940/callback")
+	chzzk := chzzkgo.New("test-client-id", "test-client-secret", "http://localhost:12940/callback")
 
 	cases := []struct {
 		name    string
@@ -91,7 +91,7 @@ func TestValidateSizePassesValidValue(t *testing.T) {
 
 // TestValidateChatSettings는 허용 목록 밖의 값이 네트워크 요청 전에 거부되는지 검증한다.
 func TestValidateChatSettings(t *testing.T) {
-	chzzk := chzzkgo.NewChzzkClient("test-client-id", "test-client-secret", "http://localhost:12940/callback")
+	chzzk := chzzkgo.New("test-client-id", "test-client-secret", "http://localhost:12940/callback")
 	chzzk.SetTokens("access", "refresh", chzzkgo.Scopes{chzzkgo.ChatSettingsWrite})
 
 	cases := []struct {

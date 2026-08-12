@@ -13,7 +13,7 @@ import (
 )
 
 func TestGetAuthorizationURL(t *testing.T) {
-	chzzk := chzzkgo.NewChzzkClient("test-client-id", "test-client-secret", "http://localhost:12940/callback")
+	chzzk := chzzkgo.New("test-client-id", "test-client-secret", "http://localhost:12940/callback")
 
 	raw := chzzk.GetAuthorizationURL("test-state")
 
@@ -49,7 +49,7 @@ func TestGetAuthorizationURL(t *testing.T) {
 
 func TestRequireScope(t *testing.T) {
 	t.Run("토큰 미설정", func(t *testing.T) {
-		chzzk := chzzkgo.NewChzzkClient("test-client-id", "test-client-secret", "http://localhost:12940/callback")
+		chzzk := chzzkgo.New("test-client-id", "test-client-secret", "http://localhost:12940/callback")
 
 		_, err := chzzk.GetUser(context.Background())
 
@@ -59,7 +59,7 @@ func TestRequireScope(t *testing.T) {
 	})
 
 	t.Run("scope 부족", func(t *testing.T) {
-		chzzk := chzzkgo.NewChzzkClient("test-client-id", "test-client-secret", "http://localhost:12940/callback")
+		chzzk := chzzkgo.New("test-client-id", "test-client-secret", "http://localhost:12940/callback")
 		chzzk.SetTokens("access", "refresh", chzzkgo.Scopes{chzzkgo.ChatMessageRead})
 
 		_, err := chzzk.GetUser(context.Background())

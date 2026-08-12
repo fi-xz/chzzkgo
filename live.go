@@ -61,7 +61,7 @@ type LiveSettings struct {
 	Tags []string `json:"tags"`
 }
 
-// LiveSettingsPatch는 [ChzzkClient.SetLiveSettings]로 변경할 방송 설정 정보를 나타낸다.
+// LiveSettingsPatch는 [Client.SetLiveSettings]로 변경할 방송 설정 정보를 나타낸다.
 //
 // nil 필드는 전송되지 않으며, 서버는 전송되지 않은 필드의 기존 값을 유지한다.
 // 값 지정에는 내장 함수 new를 사용할 수 있다. (예: new("새 제목"))
@@ -81,7 +81,7 @@ type LiveSettingsPatch struct {
 // Client 인증을 사용하므로 OAuth 토큰 없이 호출 가능하다.
 // 선택적 파라미터로 size, next를 지정할 수 있다. [WithSize], [WithNext]를 참고.
 // size의 경우, 지정되지 않았다면 서버에서 기본값 20을 사용하며, 최소 1에서 최대 20까지 지정 가능하다.
-func (c *ChzzkClient) GetLiveList(ctx context.Context, opts ...QueryOption) (*LivePages, error) {
+func (c *Client) GetLiveList(ctx context.Context, opts ...QueryOption) (*LivePages, error) {
 	q := buildQuery(opts...)
 
 	if err := validateSize(q, 1, 20); err != nil {
@@ -100,7 +100,7 @@ func (c *ChzzkClient) GetLiveList(ctx context.Context, opts ...QueryOption) (*Li
 // GetStreamKey는 방송 스트림 키를 조회한다.
 //
 // [LiveStreamKeyRead](방송 스트림키 조회) [Scope]가 필요하며, 없으면 [MissingScopeError]를 반환한다.
-func (c *ChzzkClient) GetStreamKey(ctx context.Context) (*LiveStreamKey, error) {
+func (c *Client) GetStreamKey(ctx context.Context) (*LiveStreamKey, error) {
 	if err := c.requireScope(LiveStreamKeyRead); err != nil {
 		return nil, err
 	}
@@ -111,7 +111,7 @@ func (c *ChzzkClient) GetStreamKey(ctx context.Context) (*LiveStreamKey, error) 
 // GetLiveSettings는 방송 설정 정보를 조회한다.
 //
 // [LiveSettingRead](방송 설정 조회) [Scope]가 필요하며, 없으면 [MissingScopeError]를 반환한다.
-func (c *ChzzkClient) GetLiveSettings(ctx context.Context) (*LiveSettings, error) {
+func (c *Client) GetLiveSettings(ctx context.Context) (*LiveSettings, error) {
 	if err := c.requireScope(LiveSettingRead); err != nil {
 		return nil, err
 	}
@@ -125,7 +125,7 @@ func (c *ChzzkClient) GetLiveSettings(ctx context.Context) (*LiveSettings, error
 // nil인 필드는 요청에서 제외되어 변경되지 않는다.
 //
 // [LiveSettingWrite](방송 설정 변경) [Scope]가 필요하며, 없으면 [MissingScopeError]를 반환한다.
-func (c *ChzzkClient) SetLiveSettings(ctx context.Context, settings LiveSettingsPatch) error {
+func (c *Client) SetLiveSettings(ctx context.Context, settings LiveSettingsPatch) error {
 	if err := c.requireScope(LiveSettingWrite); err != nil {
 		return err
 	}

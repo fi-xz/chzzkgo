@@ -59,12 +59,12 @@ type SessionPages struct {
 // CreateSessionWithClient은 클라이언트 인증 방식으로 세션을 생성하고, 세션 URL을 반환한다.
 //
 // Client 인증을 사용하므로 OAuth 토큰 없이 호출 가능하다.
-func (c *ChzzkClient) CreateSessionWithClient(ctx context.Context) (*SessionURLResponse, error) {
+func (c *Client) CreateSessionWithClient(ctx context.Context) (*SessionURLResponse, error) {
 	return getWithClient[SessionURLResponse](c, ctx, "/open/v1/sessions/auth/client", nil)
 }
 
 // CreateSessionWithUser은 사용자 인증 방식으로 세션을 생성하고, 세션 URL을 반환한다.
-func (c *ChzzkClient) CreateSessionWithUser(ctx context.Context) (*SessionURLResponse, error) {
+func (c *Client) CreateSessionWithUser(ctx context.Context) (*SessionURLResponse, error) {
 	return get[SessionURLResponse](c, ctx, "/open/v1/sessions/auth", nil)
 }
 
@@ -74,7 +74,7 @@ func (c *ChzzkClient) CreateSessionWithUser(ctx context.Context) (*SessionURLRes
 // 선택적 파라미터로 size, page를 지정할 수 있다. [WithSize], [WithPage]를 참고.
 // size의 경우, 지정되지 않았다면 서버에서 기본값 20을 사용하며, 최소 1에서 최대 50까지 지정 가능하다.
 // page는 0부터 시작하며, 지정되지 않았다면 서버에서 기본값 0을 사용한다.
-func (c *ChzzkClient) GetSessionsWithClient(ctx context.Context, opts ...QueryOption) (*SessionPages, error) {
+func (c *Client) GetSessionsWithClient(ctx context.Context, opts ...QueryOption) (*SessionPages, error) {
 	q := buildQuery(opts...)
 
 	if err := validateSize(q, 1, 50); err != nil {
@@ -89,7 +89,7 @@ func (c *ChzzkClient) GetSessionsWithClient(ctx context.Context, opts ...QueryOp
 // 선택적 파라미터로 size, page를 지정할 수 있다. [WithSize], [WithPage]를 참고.
 // size의 경우, 지정되지 않았다면 서버에서 기본값 20을 사용하며, 최소 1에서 최대 50까지 지정 가능하다.
 // page는 0부터 시작하며, 지정되지 않았다면 서버에서 기본값 0을 사용한다.
-func (c *ChzzkClient) GetSessionsWithUser(ctx context.Context, opts ...QueryOption) (*SessionPages, error) {
+func (c *Client) GetSessionsWithUser(ctx context.Context, opts ...QueryOption) (*SessionPages, error) {
 	q := buildQuery(opts...)
 
 	if err := validateSize(q, 1, 50); err != nil {
@@ -101,7 +101,7 @@ func (c *ChzzkClient) GetSessionsWithUser(ctx context.Context, opts ...QueryOpti
 
 // sessionEvent는 세션 이벤트 구독/해제 요청을 전송한다.
 // 토큰 오버라이드([WithAccessToken])가 있으면 scope 사전 검사를 건너뛰고 서버 판정에 맡긴다.
-func (c *ChzzkClient) sessionEvent(ctx context.Context, path string, scope Scope, sessionKey string) error {
+func (c *Client) sessionEvent(ctx context.Context, path string, scope Scope, sessionKey string) error {
 	if _, overridden := tokenOverrideOf(ctx); !overridden {
 		if err := c.requireScope(scope); err != nil {
 			return err
@@ -134,7 +134,7 @@ func (c *ChzzkClient) sessionEvent(ctx context.Context, path string, scope Scope
 //	chzzkgo.SubscribeChatEvent(ctx, sessionKey) // 현재 인증된 사용자의 채팅 이벤트 구독
 //
 //	chzzkgo.SubscribeChatEvent(chzzkgo.WithAccessToken(ctx, otherChannelToken), sessionKey) // 다른 채널의 채팅 이벤트 구독
-func (c *ChzzkClient) SubscribeChatEvent(ctx context.Context, sessionKey string) error {
+func (c *Client) SubscribeChatEvent(ctx context.Context, sessionKey string) error {
 	return c.sessionEvent(ctx, "/open/v1/sessions/events/subscribe/chat", ChatMessageRead, sessionKey)
 }
 
@@ -152,7 +152,7 @@ func (c *ChzzkClient) SubscribeChatEvent(ctx context.Context, sessionKey string)
 //	chzzkgo.UnsubscribeChatEvent(ctx, sessionKey) // 현재 인증된 사용자의 채팅 이벤트 구독 해제
 //
 //	chzzkgo.UnsubscribeChatEvent(chzzkgo.WithAccessToken(ctx, otherChannelToken), sessionKey) // 다른 채널의 채팅 이벤트 구독 해제
-func (c *ChzzkClient) UnsubscribeChatEvent(ctx context.Context, sessionKey string) error {
+func (c *Client) UnsubscribeChatEvent(ctx context.Context, sessionKey string) error {
 	return c.sessionEvent(ctx, "/open/v1/sessions/events/unsubscribe/chat", ChatMessageRead, sessionKey)
 }
 
@@ -170,7 +170,7 @@ func (c *ChzzkClient) UnsubscribeChatEvent(ctx context.Context, sessionKey strin
 //	chzzkgo.SubscribeDonationEvent(ctx, sessionKey) // 현재 인증된 사용자의 후원 이벤트 구독
 //
 //	chzzkgo.SubscribeDonationEvent(chzzkgo.WithAccessToken(ctx, otherChannelToken), sessionKey) // 다른 채널의 후원 이벤트 구독
-func (c *ChzzkClient) SubscribeDonationEvent(ctx context.Context, sessionKey string) error {
+func (c *Client) SubscribeDonationEvent(ctx context.Context, sessionKey string) error {
 	return c.sessionEvent(ctx, "/open/v1/sessions/events/subscribe/donation", DonationRead, sessionKey)
 }
 
@@ -188,7 +188,7 @@ func (c *ChzzkClient) SubscribeDonationEvent(ctx context.Context, sessionKey str
 //	chzzkgo.UnsubscribeDonationEvent(ctx, sessionKey) // 현재 인증된 사용자의 후원 이벤트 구독 해제
 //
 //	chzzkgo.UnsubscribeDonationEvent(chzzkgo.WithAccessToken(ctx, otherChannelToken), sessionKey) // 다른 채널의 후원 이벤트 구독 해제
-func (c *ChzzkClient) UnsubscribeDonationEvent(ctx context.Context, sessionKey string) error {
+func (c *Client) UnsubscribeDonationEvent(ctx context.Context, sessionKey string) error {
 	return c.sessionEvent(ctx, "/open/v1/sessions/events/unsubscribe/donation", DonationRead, sessionKey)
 }
 
@@ -206,7 +206,7 @@ func (c *ChzzkClient) UnsubscribeDonationEvent(ctx context.Context, sessionKey s
 //	chzzkgo.SubscribeSubscriptionEvent(ctx, sessionKey) // 현재 인증된 사용자의 구독 이벤트 구독
 //
 //	chzzkgo.SubscribeSubscriptionEvent(chzzkgo.WithAccessToken(ctx, otherChannelToken), sessionKey) // 다른 채널의 구독 이벤트 구독
-func (c *ChzzkClient) SubscribeSubscriptionEvent(ctx context.Context, sessionKey string) error {
+func (c *Client) SubscribeSubscriptionEvent(ctx context.Context, sessionKey string) error {
 	return c.sessionEvent(ctx, "/open/v1/sessions/events/subscribe/subscription", SubscriptionRead, sessionKey)
 }
 
@@ -224,6 +224,6 @@ func (c *ChzzkClient) SubscribeSubscriptionEvent(ctx context.Context, sessionKey
 //	chzzkgo.UnsubscribeSubscriptionEvent(ctx, sessionKey) // 현재 인증된 사용자의 구독 이벤트 구독 해제
 //
 //	chzzkgo.UnsubscribeSubscriptionEvent(chzzkgo.WithAccessToken(ctx, otherChannelToken), sessionKey) // 다른 채널의 구독 이벤트 구독 해제
-func (c *ChzzkClient) UnsubscribeSubscriptionEvent(ctx context.Context, sessionKey string) error {
+func (c *Client) UnsubscribeSubscriptionEvent(ctx context.Context, sessionKey string) error {
 	return c.sessionEvent(ctx, "/open/v1/sessions/events/unsubscribe/subscription", SubscriptionRead, sessionKey)
 }

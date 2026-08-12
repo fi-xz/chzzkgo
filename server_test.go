@@ -232,7 +232,7 @@ func TestCallbackHandlerUsesCustomSuccessPage(t *testing.T) {
 // TestStartRequiresExplicitPort는 RedirectURI에 포트가 없으면
 // 서버를 열기 전에 오류를 반환하는지 검증한다.
 func TestStartRequiresExplicitPort(t *testing.T) {
-	chzzk := chzzkgo.NewChzzkClient("test-client-id", "test-client-secret", "http://localhost/callback")
+	chzzk := chzzkgo.New("test-client-id", "test-client-secret", "http://localhost/callback")
 
 	_, err := chzzk.NewLoginServer().Start(t.Context())
 

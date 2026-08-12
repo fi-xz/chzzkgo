@@ -15,7 +15,7 @@ type User struct {
 // GetUser는 현재 인증된 사용자의 정보를 조회한다.
 //
 // [UserRead](유저 조회) [Scope]가 필요하며, 없으면 [MissingScopeError]를 반환한다.
-func (c *ChzzkClient) GetUser(ctx context.Context) (*User, error) {
+func (c *Client) GetUser(ctx context.Context) (*User, error) {
 	if err := c.requireScope(UserRead); err != nil {
 		return nil, err
 	}

@@ -39,7 +39,7 @@ const (
 // Client 인증을 사용하므로 OAuth 토큰 없이 호출 가능하다.
 // 선택적 파라미터로 size를 지정할 수 있다. [WithSize]를 참고.
 // size가 지정되지 않았다면 서버에서 기본값 20을 사용하며, 최소 1에서 최대 50까지 지정 가능하다.
-func (c *ChzzkClient) SearchCategory(ctx context.Context, query string, opts ...QueryOption) (*CategoryPages, error) {
+func (c *Client) SearchCategory(ctx context.Context, query string, opts ...QueryOption) (*CategoryPages, error) {
 	q := buildQuery(opts...)
 
 	if err := validateSize(q, 1, 50); err != nil {

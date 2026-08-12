@@ -29,7 +29,7 @@ type tokenOverrideKey struct{}
 // 클라이언트에 설정된 토큰 대신 강제 지정한 액세스 토큰을 사용한다.
 //
 // Client 인증으로 발급받은 세션 키에 다른 채널의 토큰으로 이벤트를 구독하는 경우 등에 사용한다.
-// [ChzzkClient.SubscribeChatEvent], [ChzzkClient.SubscribeDonationEvent], [ChzzkClient.SubscribeSubscriptionEvent] 참고.
+// [Client.SubscribeChatEvent], [Client.SubscribeDonationEvent], [Client.SubscribeSubscriptionEvent] 참고.
 //
 // 이 토큰의 [Scope] 검증은 서버에서 수행되며, 권한 부족 시 서버 오류가 반환된다.
 func WithAccessToken(ctx context.Context, accessToken string) context.Context {
@@ -41,7 +41,7 @@ func tokenOverrideOf(ctx context.Context) (string, bool) {
 	return tok, ok && tok != ""
 }
 
-func do[T any](c *ChzzkClient, ctx context.Context, method, path string, query url.Values, body any) (*T, error) {
+func do[T any](c *Client, ctx context.Context, method, path string, query url.Values, body any) (*T, error) {
 	u := c.baseURL + path
 
 	if len(query) > 0 {
@@ -181,26 +181,26 @@ func authModeOf(ctx context.Context) authMode {
 	return authBearer
 }
 
-func get[T any](c *ChzzkClient, ctx context.Context, path string, query url.Values) (*T, error) {
+func get[T any](c *Client, ctx context.Context, path string, query url.Values) (*T, error) {
 	return do[T](c, ctx, http.MethodGet, path, query, nil)
 }
 
-func getWithClient[T any](c *ChzzkClient, ctx context.Context, path string, query url.Values) (*T, error) {
+func getWithClient[T any](c *Client, ctx context.Context, path string, query url.Values) (*T, error) {
 	return do[T](c, withAuthMode(ctx, authClient), http.MethodGet, path, query, nil)
 }
 
-func post[T any](c *ChzzkClient, ctx context.Context, path string, body any) (*T, error) {
+func post[T any](c *Client, ctx context.Context, path string, body any) (*T, error) {
 	return do[T](c, ctx, http.MethodPost, path, nil, body)
 }
 
-func put[T any](c *ChzzkClient, ctx context.Context, path string, body any) (*T, error) {
+func put[T any](c *Client, ctx context.Context, path string, body any) (*T, error) {
 	return do[T](c, ctx, http.MethodPut, path, nil, body)
 }
 
-func patch[T any](c *ChzzkClient, ctx context.Context, path string, body any) (*T, error) {
+func patch[T any](c *Client, ctx context.Context, path string, body any) (*T, error) {
 	return do[T](c, ctx, http.MethodPatch, path, nil, body)
 }
 
-func del[T any](c *ChzzkClient, ctx context.Context, path string, body any) (*T, error) {
+func del[T any](c *Client, ctx context.Context, path string, body any) (*T, error) {
 	return do[T](c, ctx, http.MethodDelete, path, nil, body)
 }

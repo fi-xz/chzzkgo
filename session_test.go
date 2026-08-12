@@ -118,14 +118,14 @@ func TestSessionEventEndpoints(t *testing.T) {
 		name  string
 		path  string
 		scope chzzkgo.Scope
-		call  func(*chzzkgo.ChzzkClient, context.Context, string) error
+		call  func(*chzzkgo.Client, context.Context, string) error
 	}{
-		{"채팅 구독", "/open/v1/sessions/events/subscribe/chat", chzzkgo.ChatMessageRead, (*chzzkgo.ChzzkClient).SubscribeChatEvent},
-		{"채팅 구독 해제", "/open/v1/sessions/events/unsubscribe/chat", chzzkgo.ChatMessageRead, (*chzzkgo.ChzzkClient).UnsubscribeChatEvent},
-		{"후원 구독", "/open/v1/sessions/events/subscribe/donation", chzzkgo.DonationRead, (*chzzkgo.ChzzkClient).SubscribeDonationEvent},
-		{"후원 구독 해제", "/open/v1/sessions/events/unsubscribe/donation", chzzkgo.DonationRead, (*chzzkgo.ChzzkClient).UnsubscribeDonationEvent},
-		{"구독 알림 구독", "/open/v1/sessions/events/subscribe/subscription", chzzkgo.SubscriptionRead, (*chzzkgo.ChzzkClient).SubscribeSubscriptionEvent},
-		{"구독 알림 구독 해제", "/open/v1/sessions/events/unsubscribe/subscription", chzzkgo.SubscriptionRead, (*chzzkgo.ChzzkClient).UnsubscribeSubscriptionEvent},
+		{"채팅 구독", "/open/v1/sessions/events/subscribe/chat", chzzkgo.ChatMessageRead, (*chzzkgo.Client).SubscribeChatEvent},
+		{"채팅 구독 해제", "/open/v1/sessions/events/unsubscribe/chat", chzzkgo.ChatMessageRead, (*chzzkgo.Client).UnsubscribeChatEvent},
+		{"후원 구독", "/open/v1/sessions/events/subscribe/donation", chzzkgo.DonationRead, (*chzzkgo.Client).SubscribeDonationEvent},
+		{"후원 구독 해제", "/open/v1/sessions/events/unsubscribe/donation", chzzkgo.DonationRead, (*chzzkgo.Client).UnsubscribeDonationEvent},
+		{"구독 알림 구독", "/open/v1/sessions/events/subscribe/subscription", chzzkgo.SubscriptionRead, (*chzzkgo.Client).SubscribeSubscriptionEvent},
+		{"구독 알림 구독 해제", "/open/v1/sessions/events/unsubscribe/subscription", chzzkgo.SubscriptionRead, (*chzzkgo.Client).UnsubscribeSubscriptionEvent},
 	}
 
 	for _, tc := range cases {
