@@ -60,6 +60,16 @@ func New(clientID, clientSecret, redirectURI string) *Client {
 	return c
 }
 
+// NewWithoutAuth는 자격 증명 없이 새 [Client]를 생성한다.
+//
+// 클라이언트 ID/시크릿과 리디렉션 URI가 비어 있는 상태로 생성되므로,
+// 이 상태로는 Client 인증 API도 OAuth 토큰이 필요한 API도 호출할 수 없다.
+// 필요한 값은 [Client.ClientID] 등의 필드에 직접 채우거나
+// [Client.SetTokens]로 토큰을 주입해 사용한다.
+func NewWithoutAuth() *Client {
+	return New("", "", "")
+}
+
 // SetBaseURL은 API 요청의 기본 URL을 교체한다.
 // 테스트 서버나 프록시를 경유할 때 사용하며, 기본값은 https://openapi.chzzk.naver.com 이다.
 // API 호출을 시작하기 전에 설정해야 한다.

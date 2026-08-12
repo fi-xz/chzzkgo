@@ -233,7 +233,7 @@ func (c *Client) RevokeToken(ctx context.Context, body RevokeTokenRequest) error
 	return nil
 }
 
-// SetTokens는 클라이언트가 API 호출에 사용할 OAuth 토큰을 주입한다.
+// SetTokens은 클라이언트가 API 호출에 사용할 인증 토큰 데이터를 주입한다.
 //
 // 저장해 둔 토큰을 복원하거나 [Client.ExchangeCode]로 발급받은 토큰을
 // 등록할 때 사용한다. scope는 토큰 발급 시 부여된 권한 목록을 전달한다.
@@ -245,6 +245,42 @@ func (c *Client) SetTokens(accessToken, refreshToken string, scope Scopes) {
 		RefreshToken: refreshToken,
 		Scope:        scope,
 	}
+}
+
+// SetAccessToken은 클라이언트가 API 호출에 사용할 Access Token 데이터만을 주입한다.
+func (c *Client) SetAccessToken(accessToken string) {
+	c.auth.mu.Lock()
+	defer c.auth.mu.Unlock()
+
+	if c.auth.tokens == nil {
+		c.auth.tokens = &Tokens{}
+	}
+
+	c.auth.tokens.AccessToken = accessToken
+}
+
+// SetRefreshToken은 클라이언트가 API 호출에 사용할 Refresh Token 데이터만을 주입한다.
+func (c *Client) SetRefreshToken(refreshToken string) {
+	c.auth.mu.Lock()
+	defer c.auth.mu.Unlock()
+
+	if c.auth.tokens == nil {
+		c.auth.tokens = &Tokens{}
+	}
+
+	c.auth.tokens.RefreshToken = refreshToken
+}
+
+// SetScope는 클라이언트가 API 호출에 사용할 Scope 데이터만을 주입한다.
+func (c *Client) SetScope(scope Scopes) {
+	c.auth.mu.Lock()
+	defer c.auth.mu.Unlock()
+
+	if c.auth.tokens == nil {
+		c.auth.tokens = &Tokens{}
+	}
+
+	c.auth.tokens.Scope = scope
 }
 
 // OnTokenRefresh는 자동 토큰 갱신 성공 시 새 토큰을 전달받을 콜백을 등록한다.
